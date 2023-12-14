@@ -2,7 +2,7 @@ import ctypes
 import os
 
 
-lib = ctypes.CDLL(os.path.abspath('dlls/encoder_decoder.dll'))
+lib = ctypes.CDLL(os.path.abspath('lib/encoder_decoder.dll'))
 lib.encode.restype = ctypes.c_char_p
 lib.decode.restype = ctypes.c_char_p
 
