@@ -2,36 +2,26 @@
 #include <stdlib.h>
 #include <string.h>
 
-const char alphabet[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890";
+const unsigned char alphabet[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ 1234567890";
 const size_t alphabetLength = strlen(alphabet);
 
 static int findInAlphabet(char c)
 {
     for(int idx = 0; idx < alphabetLength ; idx++)
     {
-        if(c == alphabet[idx]) return idx;
+        if(c == alphabet[idx]) return idx%16;
     }
-    return -1;
+    return 0;
 }
 
-char* encode(char* MSG, char* KEY, int MSG_LENGTH, int KEY_LENGTH)
+void encode(char** MSG, char* KEY, int MSG_LENGTH, int KEY_LENGTH)
 {
-    char* encoded = (char*)malloc(MSG_LENGTH * sizeof(char));
     for(int idx=0 ; idx<MSG_LENGTH ; idx++)
-    {
-        int newCharIndex = findInAlphabet(MSG[idx]) + findInAlphabet(KEY[idx % KEY_LENGTH]);
-        encoded[idx] = alphabet[newCharIndex % alphabetLength];  // Avoid OOB
-    }
-    return encoded;
+        (*MSG)[idx] = ((*MSG)[idx] + findInAlphabet(KEY[idx%KEY_LENGTH])) % 255;
 }
 
-char* decode(char* MSG, char* KEY, int MSG_LENGTH, int KEY_LENGTH)
+void decode(char** MSG, char* KEY, int MSG_LENGTH, int KEY_LENGTH)
 {
-    char* decoded = (char*)malloc(MSG_LENGTH * sizeof(char));
     for(int idx=0 ; idx<MSG_LENGTH ; idx++)
-    {
-        int newCharIndex = findInAlphabet(MSG[idx]) - findInAlphabet(KEY[idx % KEY_LENGTH]);
-        decoded[idx] = alphabet[(newCharIndex + alphabetLength) % alphabetLength];  // '+ alphabetLength' to avoid negative indexes
-    }
-    return decoded;
+        (*MSG)[idx] = (*MSG)[idx] - findInAlphabet(KEY[idx%KEY_LENGTH]);
 }
